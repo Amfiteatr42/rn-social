@@ -70,11 +70,11 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 0.5,
-    backgroundColor: "#ecf0f1",
+    backgroundColor: "#fff",
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
     paddingTop: 32,
+    paddingBottom: 144,
   },
   input: {
     fontFamily: "Roboto400",

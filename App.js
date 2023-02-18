@@ -9,6 +9,7 @@ import LoginScreen from "./Screens/LoginScreen";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback } from "react";
+import RegistrationScreen from "./Screens/RegistrationScreen";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -36,7 +37,8 @@ export default function App() {
           resizeMode="cover"
           style={styles.image}
         >
-          <LoginScreen />
+          <RegistrationScreen />
+          {/* <LoginScreen /> */}
         </ImageBackground>
       </TouchableWithoutFeedback>
     </View>
