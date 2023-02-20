@@ -8,9 +8,10 @@ import {
   Alert,
   Pressable,
   Text,
+  ImageBackground,
 } from "react-native";
 
-export default function LoginScreen() {
+export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordHide, setPasswordHide] = useState(true);
@@ -19,52 +20,61 @@ export default function LoginScreen() {
   const passwordHandler = (text) => setPassword(text);
 
   const onLogin = () => {
-    Alert.alert("Credentials", `${email} + ${password}`);
     setEmail("");
     setPassword("");
+
+    navigation.navigate("Home");
   };
 
   return (
-    <View style={styles.container}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS == "ios" ? "padding" : "height"}
-      >
-        <View style={styles.inputBox}>
-          <Text style={styles.title}>Войти</Text>
-          <TextInput
-            value={email}
-            onChangeText={emailHandler}
-            placeholder="Адрес электронной почты"
-            style={styles.input}
-            keyboardType={"email-address"}
-          />
-          <View style={styles.passBox}>
+    <ImageBackground
+      source={require("../assets/img/PhotoBG.png")}
+      style={styles.bgImage}
+    >
+      <View style={styles.container}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS == "ios" ? "padding" : "height"}
+        >
+          <View style={styles.inputBox}>
+            <Text style={styles.title}>Войти</Text>
             <TextInput
-              value={password}
-              onChangeText={passwordHandler}
-              placeholder="Пароль"
-              secureTextEntry={passwordHide}
+              value={email}
+              onChangeText={emailHandler}
+              placeholder="Адрес электронной почты"
               style={styles.input}
+              keyboardType={"email-address"}
             />
-            <Pressable
-              onPress={() => setPasswordHide(!passwordHide)}
-              style={styles.passShowBtn}
-            >
-              <Text style={styles.passShowText}>
-                {passwordHide ? "Показать" : "Скрыть"}
-              </Text>
-            </Pressable>
-          </View>
+            <View style={styles.passBox}>
+              <TextInput
+                value={password}
+                onChangeText={passwordHandler}
+                placeholder="Пароль"
+                secureTextEntry={passwordHide}
+                style={styles.input}
+              />
+              <Pressable
+                onPress={() => setPasswordHide(!passwordHide)}
+                style={styles.passShowBtn}
+              >
+                <Text style={styles.passShowText}>
+                  {passwordHide ? "Показать" : "Скрыть"}
+                </Text>
+              </Pressable>
+            </View>
 
-          <Pressable onPress={onLogin} style={styles.button}>
-            <Text style={styles.btnTitle}>Войти</Text>
-          </Pressable>
-          <Text style={styles.redirectLink}>
-            Нет аккаунта? Зарегистрироваться
-          </Text>
-        </View>
-      </KeyboardAvoidingView>
-    </View>
+            <Pressable onPress={onLogin} style={styles.button}>
+              <Text style={styles.btnTitle}>Войти</Text>
+            </Pressable>
+            <Text
+              onPress={() => navigation.navigate("Registration")}
+              style={styles.redirectLink}
+            >
+              Нет аккаунта? Зарегистрироваться
+            </Text>
+          </View>
+        </KeyboardAvoidingView>
+      </View>
+    </ImageBackground>
   );
 }
 
@@ -75,6 +85,17 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 25,
     paddingTop: 32,
     paddingBottom: 144,
+  },
+  bgImage: {
+    flex: 1,
+    justifyContent: "flex-end",
+    position: "absolute",
+    resizeMode: "cover",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: -1,
   },
   input: {
     fontFamily: "Roboto400",

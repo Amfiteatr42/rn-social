@@ -10,10 +10,12 @@ import {
   Pressable,
   Text,
   Image,
+  ImageBackground,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import Svg, { Circle, Path } from "react-native-svg";
 
-export default function RegistrationScreen() {
+export default function RegistrationScreen({ navigation }) {
   const [image, setImage] = useState(null);
   const [login, setLogin] = useState("");
   const [email, setEmail] = useState("");
@@ -40,6 +42,12 @@ export default function RegistrationScreen() {
   const loginHandler = (text) => setLogin(text);
 
   const pickImage = async () => {
+    console.log("alsdjasldj");
+    if (image) {
+      setImage(null);
+      return;
+    }
+
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -53,76 +61,106 @@ export default function RegistrationScreen() {
   };
 
   const onRegistry = () => {
-    Alert.alert("Credentials", `${email} + ${password} + ${login}`);
     setEmail("");
     setPassword("");
     setLogin("");
+
+    navigation.navigate("Home");
   };
 
   return (
-    <View
-      style={{ ...styles.container, marginBottom: isKeyboadShow ? -180 : 0 }}
+    <ImageBackground
+      source={require("../assets/img/PhotoBG.png")}
+      style={styles.bgImage}
     >
-      <KeyboardAvoidingView
-        behavior={Platform.OS == "ios" ? "padding" : "height"}
+      <View
+        style={{ ...styles.container, marginBottom: isKeyboadShow ? -180 : 0 }}
       >
-        <View style={styles.inputBox}>
-          <View style={{ alignItems: "center" }}>
-            <Pressable onPress={pickImage} style={styles.pickImageBtn}>
-              {image && (
-                <Image source={{ uri: image }} style={styles.photoImg} />
-              )}
-              <Image
-                source={
-                  image
-                    ? require("../assets/img/delete.png")
-                    : require("../assets/img/add.png")
-                }
-                style={styles.photoIcon}
-              />
-            </Pressable>
-          </View>
-          <Text style={styles.title}>Регистрация</Text>
+        <KeyboardAvoidingView
+          behavior={Platform.OS == "ios" ? "padding" : "height"}
+        >
+          <View style={styles.inputBox}>
+            <View style={{ alignItems: "center" }}>
+              <Pressable onPress={pickImage} style={styles.pickImageBtn}>
+                {image && (
+                  <Image source={{ uri: image }} style={styles.photoImg} />
+                )}
+                <Svg
+                  width={25}
+                  height={25}
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style={{
+                    ...styles.photoIcon,
+                    transform: image
+                      ? [{ rotate: "45deg" }]
+                      : [{ rotate: "0deg" }],
+                  }}
+                  viewBox="0 0 25 25"
+                >
+                  <Circle
+                    cx={12.5}
+                    cy={12.5}
+                    r={12}
+                    fill="#fff"
+                    stroke={image ? "#E8E8E8" : "#FF6C00"}
+                  />
+                  <Path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M13 6h-1v6H6v1h6v6h1v-6h6v-1h-6V6Z"
+                    fill={image ? "#E8E8E8" : "#FF6C00"}
+                  />
+                </Svg>
+              </Pressable>
+            </View>
+            <Text style={styles.title}>Регистрация</Text>
 
-          <TextInput
-            value={login}
-            onChangeText={loginHandler}
-            placeholder="Логин"
-            style={styles.input}
-            onFocus={() => setIsKeyboadShow(true)}
-          />
-          <TextInput
-            value={email}
-            onChangeText={emailHandler}
-            placeholder="Адрес электронной почты"
-            style={styles.input}
-            keyboardType={"email-address"}
-          />
-          <View style={styles.passBox}>
             <TextInput
-              value={password}
-              onChangeText={passwordHandler}
-              placeholder="Пароль"
-              secureTextEntry={passwordHide}
+              value={login}
+              onChangeText={loginHandler}
+              placeholder="Логин"
               style={styles.input}
+              onFocus={() => setIsKeyboadShow(true)}
             />
-            <Pressable
-              onPress={() => setPasswordHide(!passwordHide)}
-              style={styles.passShowBtn}
-            >
-              <Text style={styles.passShowText}>
-                {passwordHide ? "Показать" : "Скрыть"}
-              </Text>
-            </Pressable>
-          </View>
+            <TextInput
+              value={email}
+              onChangeText={emailHandler}
+              placeholder="Адрес электронной почты"
+              style={styles.input}
+              keyboardType={"email-address"}
+            />
+            <View style={styles.passBox}>
+              <TextInput
+                value={password}
+                onChangeText={passwordHandler}
+                placeholder="Пароль"
+                secureTextEntry={passwordHide}
+                style={styles.input}
+              />
+              <Pressable
+                onPress={() => setPasswordHide(!passwordHide)}
+                style={styles.passShowBtn}
+              >
+                <Text style={styles.passShowText}>
+                  {passwordHide ? "Показать" : "Скрыть"}
+                </Text>
+              </Pressable>
+            </View>
 
-          <Pressable onPress={onRegistry} style={styles.button}>
-            <Text style={styles.btnTitle}>Зарегистрироваться</Text>
-          </Pressable>
-          <Text style={styles.redirectLink}>Уже есть аккаунт? Войти.</Text>
-        </View>
-      </KeyboardAvoidingView>
-    </View>
+            <Pressable onPress={onRegistry} style={styles.button}>
+              <Text style={styles.btnTitle}>Зарегистрироваться</Text>
+            </Pressable>
+            <Text
+              onPress={() => navigation.navigate("Login")}
+              style={styles.redirectLink}
+            >
+              Уже есть аккаунт? Войти.
+            </Text>
+          </View>
+        </KeyboardAvoidingView>
+      </View>
+    </ImageBackground>
   );
 }
 
@@ -131,8 +169,18 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    paddingTop: 92,
     paddingBottom: 78,
+  },
+  bgImage: {
+    flex: 1,
+    justifyContent: "flex-end",
+    position: "absolute",
+    resizeMode: "cover",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: -1,
   },
   input: {
     fontFamily: "Roboto400",
@@ -195,7 +243,7 @@ const styles = StyleSheet.create({
     height: 120,
     backgroundColor: "#F6F6F6",
     borderRadius: 16,
-    marginTop: -152,
+    marginTop: -60,
     marginBottom: 32,
   },
   photoIcon: {

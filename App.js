@@ -1,17 +1,20 @@
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import {
   StyleSheet,
-  ImageBackground,
   View,
   Keyboard,
   TouchableWithoutFeedback,
 } from "react-native";
-import LoginScreen from "./Screens/LoginScreen";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback } from "react";
 import RegistrationScreen from "./Screens/RegistrationScreen";
+import LoginScreen from "./Screens/LoginScreen";
+import Home from "./Screens/Home";
 
 SplashScreen.preventAutoHideAsync();
+const { Navigator, Screen } = createNativeStackNavigator();
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -32,14 +35,20 @@ export default function App() {
   return (
     <View style={styles.container} onLayout={onLayoutRootView}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <ImageBackground
-          source={require("./assets/img/PhotoBG.png")}
-          resizeMode="cover"
-          style={styles.image}
-        >
-          <RegistrationScreen />
-          {/* <LoginScreen /> */}
-        </ImageBackground>
+        <NavigationContainer>
+          <Navigator
+            initialRouteName="Login"
+            screenOptions={{ headerShown: false }}
+          >
+            <Screen name="Registration" component={RegistrationScreen} />
+            <Screen name="Login" component={LoginScreen} />
+            <Screen
+              name="Home"
+              component={Home}
+              options={{ headerBackVisible: true }}
+            />
+          </Navigator>
+        </NavigationContainer>
       </TouchableWithoutFeedback>
     </View>
   );
@@ -48,15 +57,5 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  image: {
-    // flex: 1,
-    justifyContent: "flex-end",
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: -1,
   },
 });
