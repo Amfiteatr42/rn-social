@@ -3,14 +3,11 @@ import PostsScreen from "./PostsScreen";
 import ProfileScreen from "./ProfileScreen";
 import CreatePostsScreen from "./CreatePostsScreen";
 import Feather from "react-native-vector-icons/Feather";
-import { Pressable, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 const Tab = createBottomTabNavigator();
 
 export default function Home({ navigation }) {
-  function logOut() {
-    navigation.navigate("Login");
-  }
   return (
     <Tab.Navigator
       initialRouteName="Posts"
@@ -28,15 +25,16 @@ export default function Home({ navigation }) {
         name="Posts"
         component={PostsScreen}
         options={{
-          headerTitle: "Публикации",
+          // headerTitle: "Публикации",
+          headerShown: false,
           tabBarIcon: () => (
             <Feather name="grid" color={"#212121CC"} size={24} />
           ),
-          headerRight: () => (
-            <Pressable onPress={logOut} style={{ marginRight: 16 }}>
-              <Feather name="log-out" color={"#BDBDBD"} size={24} />
-            </Pressable>
-          ),
+          // headerRight: () => (
+          //   <Pressable onPress={logOut} style={{ marginRight: 16 }}>
+          //     <Feather name="log-out" color={"#BDBDBD"} size={24} />
+          //   </Pressable>
+          // ),
         }}
       />
       <Tab.Screen

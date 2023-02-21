@@ -12,9 +12,10 @@ import { useCallback } from "react";
 import RegistrationScreen from "./Screens/RegistrationScreen";
 import LoginScreen from "./Screens/LoginScreen";
 import Home from "./Screens/Home";
+import { Provider } from "react-redux";
 
 SplashScreen.preventAutoHideAsync();
-const { Navigator, Screen } = createNativeStackNavigator();
+const MainNav = createNativeStackNavigator();
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -33,24 +34,29 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container} onLayout={onLayoutRootView}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <NavigationContainer>
-          <Navigator
-            initialRouteName="Login"
-            screenOptions={{ headerShown: false }}
-          >
-            <Screen name="Registration" component={RegistrationScreen} />
-            <Screen name="Login" component={LoginScreen} />
-            <Screen
-              name="Home"
-              component={Home}
-              options={{ headerBackVisible: true }}
-            />
-          </Navigator>
-        </NavigationContainer>
-      </TouchableWithoutFeedback>
-    </View>
+    <Provider>
+      <View style={styles.container} onLayout={onLayoutRootView}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <NavigationContainer>
+            <MainNav.Navigator
+              initialRouteName="Login"
+              screenOptions={{ headerShown: false }}
+            >
+              <MainNav.Screen
+                name="Registration"
+                component={RegistrationScreen}
+              />
+              <MainNav.Screen name="Login" component={LoginScreen} />
+              <MainNav.Screen
+                name="Home"
+                component={Home}
+                options={{ headerBackVisible: true }}
+              />
+            </MainNav.Navigator>
+          </NavigationContainer>
+        </TouchableWithoutFeedback>
+      </View>
+    </Provider>
   );
 }
 
