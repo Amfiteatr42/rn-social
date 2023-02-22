@@ -11,10 +11,8 @@ import {
   Image,
   ImageBackground,
 } from "react-native";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
 import * as ImagePicker from "expo-image-picker";
 import Svg, { Circle, Path } from "react-native-svg";
-import { useDispatch } from "react-redux";
 import { registry } from "../redux/auth/authOperations";
 
 export default function RegistrationScreen({ navigation }) {
@@ -24,9 +22,6 @@ export default function RegistrationScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [passwordHide, setPasswordHide] = useState(true);
   const [isKeyboadShow, setIsKeyboadShow] = useState(false);
-
-  const auth = getAuth();
-  const dispath = useDispatch();
 
   useEffect(() => {
     const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
@@ -70,8 +65,6 @@ export default function RegistrationScreen({ navigation }) {
     setEmail("");
     setPassword("");
     setLogin("");
-
-    navigation.navigate("Home");
   };
 
   return (

@@ -4,16 +4,14 @@ import { login, logout, registry } from "./authOperations";
 const initialState = {
   userId: null,
   nickname: null,
-  isLoggedIn: false,
-  error: null,
 };
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setUserId(state, action) {
-      return { ...state, userId: action.payload };
+    setUserData(state, { payload }) {
+      return { ...state, userId: payload.uid, nickname: payload.displayName };
     },
   },
   extraReducers: (builder) => {
@@ -21,12 +19,10 @@ const authSlice = createSlice({
       .addCase(registry.fulfilled, (state, { payload }) => {
         state.userId = payload.userId;
         state.nickname = payload.nickname;
-        state.isLoggedIn = true;
       })
       .addCase(login.fulfilled, (state, { payload }) => {
         state.userId = payload.userId;
         state.nickname = payload.nickname;
-        state.isLoggedIn = true;
       })
       .addCase(logout.fulfilled, (state) => {
         state = initialState;
@@ -35,3 +31,4 @@ const authSlice = createSlice({
 });
 
 export const authReducer = authSlice.reducer;
+export const { setUserData } = authSlice.actions;

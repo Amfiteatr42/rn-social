@@ -9,8 +9,10 @@ import {
 import { Camera } from "expo-camera";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import * as MediaLibrary from "expo-media-library";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import * as Location from "expo-location";
+import { ref, uploadBytes } from "firebase/storage";
+import { storage } from "../firebase/config";
 
 export default function CreatePostsScreen({ navigation }) {
   const [cameraRef, setCameraRef] = useState(null);
@@ -56,7 +58,13 @@ export default function CreatePostsScreen({ navigation }) {
     }
   }
 
-  function sendPost() {
+  async function sendPost() {
+    const file = await (await fetch(photo)).blob();
+    const postId = Date.now().toString();
+    const storageRef = ref(storage, `postImages/${postId}`);
+
+    uploadBytes(storageRef, file);
+
     navigation.navigate("DefaultScreen", { photo });
   }
 

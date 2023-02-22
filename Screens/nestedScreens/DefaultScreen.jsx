@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { FlatList, Image, View } from "react-native";
 
-export default function DefaultScreen({ route, navigation }) {
+export default function DefaultScreen({ route }) {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {

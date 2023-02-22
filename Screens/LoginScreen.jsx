@@ -28,8 +28,6 @@ export default function LoginScreen({ navigation }) {
 
     setEmail("");
     setPassword("");
-
-    navigation.navigate("Home");
   };
 
   return (
