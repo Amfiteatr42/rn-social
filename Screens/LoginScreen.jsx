@@ -10,16 +10,22 @@ import {
   Text,
   ImageBackground,
 } from "react-native";
+import { useDispatch } from "react-redux";
+import { login } from "../redux/auth/authOperations";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordHide, setPasswordHide] = useState(true);
 
+  const dispath = useDispatch();
+
   const emailHandler = (text) => setEmail(text);
   const passwordHandler = (text) => setPassword(text);
 
   const onLogin = () => {
+    dispath(login({ email, password }));
+
     setEmail("");
     setPassword("");
 

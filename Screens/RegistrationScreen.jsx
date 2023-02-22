@@ -6,20 +6,16 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   Platform,
-  Alert,
   Pressable,
   Text,
   Image,
   ImageBackground,
 } from "react-native";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  onAuthStateChanged,
-} from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import * as ImagePicker from "expo-image-picker";
 import Svg, { Circle, Path } from "react-native-svg";
-import { async } from "@firebase/util";
+import { useDispatch } from "react-redux";
+import { registry } from "../redux/auth/authOperations";
 
 export default function RegistrationScreen({ navigation }) {
   const [image, setImage] = useState(null);
@@ -30,6 +26,7 @@ export default function RegistrationScreen({ navigation }) {
   const [isKeyboadShow, setIsKeyboadShow] = useState(false);
 
   const auth = getAuth();
+  const dispath = useDispatch();
 
   useEffect(() => {
     const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
@@ -68,11 +65,7 @@ export default function RegistrationScreen({ navigation }) {
   };
 
   const onRegistry = async () => {
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-    } catch (error) {
-      console.error(error);
-    }
+    dispath(registry({ email, password, login }));
 
     setEmail("");
     setPassword("");

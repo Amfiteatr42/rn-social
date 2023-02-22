@@ -4,12 +4,16 @@ import DefaultScreen from "./nestedScreens/DefaultScreen";
 import MapScreen from "./nestedScreens/MapScreen";
 import { Pressable, StyleSheet } from "react-native";
 import Feather from "react-native-vector-icons/Feather";
+import { logout } from "../redux/auth/authOperations";
+import { useDispatch } from "react-redux";
 
 const PostsNav = createNativeStackNavigator();
 
 export default function PostsScreen({ route, navigation }) {
-  function logOut() {
-    navigation.navigate("Login");
+  const dispatch = useDispatch();
+
+  function onLogOut() {
+    dispatch(logout());
   }
 
   return (
@@ -28,7 +32,7 @@ export default function PostsScreen({ route, navigation }) {
           headerTitle: "Публикации",
 
           headerRight: () => (
-            <Pressable onPress={logOut} style={{ marginRight: 16 }}>
+            <Pressable onPress={onLogOut} style={{ marginRight: 16 }}>
               <Feather name="log-out" color={"#BDBDBD"} size={24} />
             </Pressable>
           ),
