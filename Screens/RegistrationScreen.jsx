@@ -12,8 +12,14 @@ import {
   Image,
   ImageBackground,
 } from "react-native";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+} from "firebase/auth";
 import * as ImagePicker from "expo-image-picker";
 import Svg, { Circle, Path } from "react-native-svg";
+import { async } from "@firebase/util";
 
 export default function RegistrationScreen({ navigation }) {
   const [image, setImage] = useState(null);
@@ -22,6 +28,8 @@ export default function RegistrationScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [passwordHide, setPasswordHide] = useState(true);
   const [isKeyboadShow, setIsKeyboadShow] = useState(false);
+
+  const auth = getAuth();
 
   useEffect(() => {
     const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
@@ -42,7 +50,6 @@ export default function RegistrationScreen({ navigation }) {
   const loginHandler = (text) => setLogin(text);
 
   const pickImage = async () => {
-    console.log("alsdjasldj");
     if (image) {
       setImage(null);
       return;
@@ -60,7 +67,13 @@ export default function RegistrationScreen({ navigation }) {
     }
   };
 
-  const onRegistry = () => {
+  const onRegistry = async () => {
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      console.error(error);
+    }
+
     setEmail("");
     setPassword("");
     setLogin("");

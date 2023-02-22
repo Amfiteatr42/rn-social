@@ -13,6 +13,7 @@ import RegistrationScreen from "./Screens/RegistrationScreen";
 import LoginScreen from "./Screens/LoginScreen";
 import Home from "./Screens/Home";
 import { Provider } from "react-redux";
+import { store } from "./redux/store";
 
 SplashScreen.preventAutoHideAsync();
 const MainNav = createNativeStackNavigator();
@@ -34,7 +35,7 @@ export default function App() {
   }
 
   return (
-    <Provider>
+    <Provider store={store}>
       <View style={styles.container} onLayout={onLayoutRootView}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <NavigationContainer>
