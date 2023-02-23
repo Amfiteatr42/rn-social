@@ -10,16 +10,24 @@ import { Camera } from "expo-camera";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import * as MediaLibrary from "expo-media-library";
 import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import * as Location from "expo-location";
-import { ref, uploadBytes } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { collection, addDoc } from "firebase/firestore";
 import { storage } from "../firebase/config";
+import { db } from "../firebase/config";
 
 export default function CreatePostsScreen({ navigation }) {
   const [cameraRef, setCameraRef] = useState(null);
   const [photo, setPhoto] = useState("");
+  const [postName, setPostName] = useState("");
+  const [location, setLocation] = useState(null);
+  const [locationDesc, setLocationDesc] = useState("");
   const [permission, requestCameraPermission] = Camera.useCameraPermissions();
   const [status, requestLocationPermission] =
     Location.useForegroundPermissions();
+
+  const { userId, nickname } = useSelector((state) => state.auth);
 
   useEffect(() => {
     (async () => {
@@ -50,11 +58,13 @@ export default function CreatePostsScreen({ navigation }) {
 
   async function makePhoto() {
     if (cameraRef) {
-      const { coords } = await Location.getCurrentPositionAsync({});
+      const {
+        coords: { latitude, longitude },
+      } = await Location.getCurrentPositionAsync({});
       const { uri } = await cameraRef.takePictureAsync();
       setPhoto(uri);
+      setLocation({ latitude, longitude });
       await MediaLibrary.createAssetAsync(uri);
-      console.log(coords);
     }
   }
 
@@ -63,9 +73,22 @@ export default function CreatePostsScreen({ navigation }) {
     const postId = Date.now().toString();
     const storageRef = ref(storage, `postImages/${postId}`);
 
-    uploadBytes(storageRef, file);
+    await uploadBytes(storageRef, file);
+    const photoURL = await getDownloadURL(storageRef);
+    console.log(photoURL);
+    console.log(location);
+    console.log(postName);
 
-    navigation.navigate("DefaultScreen", { photo });
+    await addDoc(collection(db, "posts"), {
+      userId,
+      nickname,
+      photoURL,
+      postName,
+      location,
+      locationDesc,
+    });
+
+    navigation.navigate("DefaultScreen");
   }
 
   return (
@@ -85,8 +108,18 @@ export default function CreatePostsScreen({ navigation }) {
           {photo ? "Редактировать фото" : "Загрузите фото"}
         </Text>
       </View>
-      <TextInput style={s.postName} placeholder="Название..." />
-      <TextInput style={s.postName} placeholder="Местность..." />
+      <TextInput
+        style={s.postName}
+        placeholder="Название..."
+        value={postName}
+        onChangeText={(text) => setPostName(text)}
+      />
+      <TextInput
+        style={s.postName}
+        placeholder="Местность..."
+        value={locationDesc}
+        onChangeText={(text) => setLocationDesc(text)}
+      />
       <Pressable style={s.postBtn}>
         <Text style={s.postBtnTitle} onPress={sendPost}>
           Опубликовать
