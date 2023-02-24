@@ -14,6 +14,9 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import Svg, { Circle, Path } from "react-native-svg";
 import { registry } from "../redux/auth/authOperations";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "../firebase/config";
+import { useDispatch } from "react-redux";
 
 export default function RegistrationScreen({ navigation }) {
   const [image, setImage] = useState(null);
@@ -22,6 +25,8 @@ export default function RegistrationScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [passwordHide, setPasswordHide] = useState(true);
   const [isKeyboadShow, setIsKeyboadShow] = useState(false);
+
+  const dispath = useDispatch();
 
   useEffect(() => {
     const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
@@ -55,12 +60,20 @@ export default function RegistrationScreen({ navigation }) {
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      const imageLocal = result.assets[0].uri;
+
+      const file = await (await fetch(imageLocal)).blob();
+      const postId = Date.now().toString();
+      const storageRef = ref(storage, `userAvatars/${postId}`);
+
+      await uploadBytes(storageRef, file);
+      const photoURL = await getDownloadURL(storageRef);
+      setImage(photoURL);
     }
   };
 
   const onRegistry = async () => {
-    dispath(registry({ email, password, login }));
+    dispath(registry({ email, password, login, image }));
 
     setEmail("");
     setPassword("");
@@ -134,8 +147,8 @@ export default function RegistrationScreen({ navigation }) {
                 value={password}
                 onChangeText={passwordHandler}
                 placeholder="Пароль"
-                secureTextEntry={passwordHide}
                 style={styles.input}
+                secureTextEntry={passwordHide}
               />
               <Pressable
                 onPress={() => setPasswordHide(!passwordHide)}

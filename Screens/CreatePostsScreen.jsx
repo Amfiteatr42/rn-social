@@ -6,16 +6,18 @@ import {
   Pressable,
   Image,
 } from "react-native";
+import { useIsFocused } from "@react-navigation/native";
 import { Camera } from "expo-camera";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import * as MediaLibrary from "expo-media-library";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import * as Location from "expo-location";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { collection, addDoc } from "firebase/firestore";
 import { storage } from "../firebase/config";
 import { db } from "../firebase/config";
+import Feather from "react-native-vector-icons/Feather";
 
 export default function CreatePostsScreen({ navigation }) {
   const [cameraRef, setCameraRef] = useState(null);
@@ -28,6 +30,8 @@ export default function CreatePostsScreen({ navigation }) {
     Location.useForegroundPermissions();
 
   const { userId, nickname } = useSelector((state) => state.auth);
+  const isAllFieldsFilled = photo && postName && locationDesc;
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     (async () => {
@@ -75,9 +79,6 @@ export default function CreatePostsScreen({ navigation }) {
 
     await uploadBytes(storageRef, file);
     const photoURL = await getDownloadURL(storageRef);
-    console.log(photoURL);
-    console.log(location);
-    console.log(postName);
 
     await addDoc(collection(db, "posts"), {
       userId,
@@ -97,11 +98,13 @@ export default function CreatePostsScreen({ navigation }) {
         {photo ? (
           <Image source={{ uri: photo }} style={s.cameraView} />
         ) : (
-          <Camera style={s.cameraView} ref={setCameraRef}>
-            <Pressable style={s.cameraBtn} onPress={makePhoto}>
-              <FontAwesome5 name="camera" size={24} color={"#fff"} />
-            </Pressable>
-          </Camera>
+          isFocused && (
+            <Camera style={s.cameraView} ref={setCameraRef}>
+              <Pressable style={s.cameraBtn} onPress={makePhoto}>
+                <FontAwesome5 name="camera" size={24} color={"#fff"} />
+              </Pressable>
+            </Camera>
+          )
         )}
 
         <Text style={s.cameraText} onPress={() => !!photo && setPhoto("")}>
@@ -111,17 +114,33 @@ export default function CreatePostsScreen({ navigation }) {
       <TextInput
         style={s.postName}
         placeholder="Название..."
+        placeholderTextColor={"#BDBDBD"}
         value={postName}
         onChangeText={(text) => setPostName(text)}
       />
-      <TextInput
-        style={s.postName}
-        placeholder="Местность..."
-        value={locationDesc}
-        onChangeText={(text) => setLocationDesc(text)}
-      />
-      <Pressable style={s.postBtn}>
-        <Text style={s.postBtnTitle} onPress={sendPost}>
+      <View>
+        <TextInput
+          style={{ ...s.postName, paddingLeft: 28 }}
+          placeholder="Местность..."
+          placeholderTextColor={"#BDBDBD"}
+          value={locationDesc}
+          onChangeText={(text) => setLocationDesc(text)}
+        />
+        <Feather name="map-pin" color={"#BDBDBD"} size={24} style={s.mapIcon} />
+      </View>
+      <Pressable
+        style={{
+          ...s.postBtn,
+          backgroundColor: isAllFieldsFilled ? "#FF6C00" : "#F6F6F6",
+        }}
+      >
+        <Text
+          style={{
+            ...s.postBtnTitle,
+            color: isAllFieldsFilled ? "#fff" : "#BDBDBD",
+          }}
+          onPress={sendPost}
+        >
           Опубликовать
         </Text>
       </Pressable>
@@ -153,7 +172,7 @@ const s = StyleSheet.create({
     marginBottom: 32,
   },
   postName: {
-    color: "#BDBDBD",
+    color: "#212121",
     fontSize: 16,
     fontFamily: "Roboto400",
     marginBottom: 16,
@@ -164,13 +183,11 @@ const s = StyleSheet.create({
   postBtn: {
     height: 50,
     marginTop: 16,
-    backgroundColor: "#FF6C00",
     borderRadius: 100,
     alignItems: "center",
     justifyContent: "center",
   },
   postBtnTitle: {
-    color: "#fff",
     fontFamily: "Roboto400",
   },
   cameraBtn: {
@@ -180,5 +197,10 @@ const s = StyleSheet.create({
     backgroundColor: "#FFFFFF4D",
     justifyContent: "center",
     alignItems: "center",
+  },
+  mapIcon: {
+    position: "absolute",
+    top: 18,
+    left: 0,
   },
 });

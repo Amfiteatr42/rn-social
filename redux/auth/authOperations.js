@@ -9,15 +9,17 @@ import { auth } from "../../firebase/config";
 
 export const registry = createAsyncThunk(
   "auth/registry",
-  async ({ email, password, login }, thunkAPI) => {
+  async ({ email, password, login, image }, thunkAPI) => {
     try {
       const { user } = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       );
+
       await updateProfile(auth.currentUser, {
         displayName: login,
+        photoURL: image,
       });
 
       return { userId: user.uid, nickname: login };
